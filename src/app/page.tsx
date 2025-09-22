@@ -30,8 +30,8 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok || !data?.url) throw new Error("Création paiement échouée");
       window.location.href = data.url; // redirection vers Stripe
-    } catch (e: any) {
-      setErr(e.message || "Erreur serveur");
+    } catch (err: unknown) {
+      setErr(err instanceof Error ? err.message : "Erreur serveur");
       setLoading(false);
     }
   }

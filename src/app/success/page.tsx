@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function SuccessPage() {
   const params = useSearchParams();
@@ -11,7 +12,7 @@ export default function SuccessPage() {
       <h1>Paiement réussi ✅</h1>
       <p>Merci ! Ton message a bien été enregistré.</p>
       <p>Session ID : {sessionId}</p>
-      <a href="/" style={{ color: "blue" }}>Retour à l’accueil</a>
+      <Link href="/" style={{ color: "blue" }}>Retour à l’accueil</Link>
     </main>
   );
 }
