@@ -8,8 +8,7 @@ const STRIPE_KEY = process.env.STRIPE_SECRET_KEY as string;
 if (!STRIPE_KEY) {
   console.error("Missing STRIPE_SECRET_KEY in .env.local");
 }
-const stripe = new Stripe(STRIPE_KEY ?? "", { apiVersion: "2024-06-20" });
-
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 // GET facultatif pour éviter le 405 quand on ouvre l’URL dans le navigateur
 export async function GET() {
   return NextResponse.json({ ok: true, hint: "POST only. Send {pendingText}." });
