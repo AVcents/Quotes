@@ -1,5 +1,5 @@
 "use client";
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -260,8 +260,6 @@ export default function Home() {
   );
 }
 
-"use client";
-import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 function RevealedMessage() {
