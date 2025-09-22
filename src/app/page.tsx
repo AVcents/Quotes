@@ -1,13 +1,9 @@
 "use client";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
 
 export default function Home() {
   const [text, setText] = useState("");
   type Msg = { text: string; created_at: string } | null;
-  const [revealed, setRevealed] = useState<Msg>(null);
-  const params = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [charCount, setCharCount] = useState(0);
@@ -43,20 +39,6 @@ export default function Home() {
       setCharCount(newText.length);
     }
   };
-
-  useEffect(() => {
-  const sessionId = params.get("session_id");
-  if (!sessionId) return;
-
-  fetch(`/api/confirm?session_id=${encodeURIComponent(sessionId)}`)
-    .then(r => r.json())
-    .then(d => {
-      if (d?.previous) setRevealed(d.previous);
-      window.history.replaceState({}, document.title, "/");
-    })
-    .catch(() => setErr("Erreur lors de la confirmation"));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [params]);
 
   return (
     <main className="min-h-screen relative overflow-hidden">
@@ -97,28 +79,25 @@ export default function Home() {
         {/* Card principale */}
         <div className="w-full max-w-lg animate-fade-in-up">
           {/* Placeholder pour le dernier message */}
-         <div className="mb-8 p-6 backdrop-blur-md bg-white/5 rounded-2xl border border-white/10 shadow-2xl transform transition-all duration-300 hover:scale-[1.02]">
-  <div className="flex items-center justify-between mb-3">
-    <span className="text-xs uppercase tracking-widest text-purple-400 font-semibold">
-      Last Message
-    </span>
-    <span className="text-xs text-gray-500">
-      {revealed ? "Revealed" : "Hidden until payment"}
-    </span>
-  </div>
-
-  {revealed ? (
-    <blockquote className="text-gray-100 text-lg leading-relaxed">
-      {revealed.text}
-    </blockquote>
-  ) : (
-    <div className="space-y-2">
-      <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-full animate-pulse" />
-      <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-5/6 animate-pulse animation-delay-200" />
-      <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-4/6 animate-pulse animation-delay-400" />
-    </div>
-  )}
-</div>
+          <Suspense fallback={
+            <div className="mb-8 p-6 backdrop-blur-md bg-white/5 rounded-2xl border border-white/10 shadow-2xl transform transition-all duration-300 hover:scale-[1.02]">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs uppercase tracking-widest text-purple-400 font-semibold">
+                  Last Message
+                </span>
+                <span className="text-xs text-gray-500">
+                  Loading...
+                </span>
+              </div>
+              <div className="space-y-2">
+                <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-full animate-pulse" />
+                <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-5/6 animate-pulse animation-delay-200" />
+                <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-4/6 animate-pulse animation-delay-400" />
+              </div>
+            </div>
+          }>
+            <RevealedMessage />
+          </Suspense>
 
           {/* Formulaire */}
           <form onSubmit={pay} className="backdrop-blur-md bg-white/5 rounded-2xl border border-white/10 shadow-2xl p-8 space-y-6">
@@ -278,5 +257,55 @@ export default function Home() {
         }
       `}</style>
     </main>
+  );
+}
+
+"use client";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+
+function RevealedMessage() {
+  const [revealed, setRevealed] = useState<{ text: string; created_at: string } | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const params = useSearchParams();
+
+  useEffect(() => {
+    const sessionId = params.get("session_id");
+    if (!sessionId) return;
+
+    fetch(`/api/confirm?session_id=${encodeURIComponent(sessionId)}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d?.previous) setRevealed(d.previous);
+        window.history.replaceState({}, document.title, "/");
+      })
+      .catch(() => setErr("Erreur lors de la confirmation"));
+  }, [params]);
+
+  return (
+    <div className="mb-8 p-6 backdrop-blur-md bg-white/5 rounded-2xl border border-white/10 shadow-2xl transform transition-all duration-300 hover:scale-[1.02]">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs uppercase tracking-widest text-purple-400 font-semibold">
+          Last Message
+        </span>
+        <span className="text-xs text-gray-500">
+          {revealed ? "Revealed" : "Hidden until payment"}
+        </span>
+      </div>
+
+      {err ? (
+        <p className="text-red-400 text-sm">{err}</p>
+      ) : revealed ? (
+        <blockquote className="text-gray-100 text-lg leading-relaxed">
+          {revealed.text}
+        </blockquote>
+      ) : (
+        <div className="space-y-2">
+          <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-full animate-pulse" />
+          <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-5/6 animate-pulse animation-delay-200" />
+          <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-4/6 animate-pulse animation-delay-400" />
+        </div>
+      )}
+    </div>
   );
 }
