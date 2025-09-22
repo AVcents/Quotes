@@ -1,6 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-const FILE = path.join(process.cwd(), "messages.dev.json");
+const FILE =
+  process.env.NODE_ENV === "production"
+    ? "/tmp/messages.dev.json"
+    : path.join(process.cwd(), "messages.dev.json");
 type Msg = { text: string; created_at: string };
 function read(): Msg | null {
   try { return JSON.parse(fs.readFileSync(FILE, "utf8"))?.last ?? null; }
