@@ -46,15 +46,17 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${origin}/?session_id={CHECKOUT_SESSION_ID}`,      cancel_url: `${origin}/`,
+      success_url: `${origin}/?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/`,
       metadata: { pending_text: text },
     });
 
     return NextResponse.json({ url: session.url }, { status: 200 });
-  } catch (err: any) {
-    console.error("Stripe error:", err);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Stripe error:", msg);
     return NextResponse.json(
-      { error: "SERVER_ERROR", detail: err?.message ?? String(err) },
+      { error: "SERVER_ERROR", detail: msg },
       { status: 500 }
     );
   }
