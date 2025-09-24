@@ -89,7 +89,7 @@ export default function Home() {
             Une chaîne infinie d'expressions humaines
           </p>
           <p className="text-md text-gray-400 mt-2">
-            1€ pour lever le voile et laisser votre vérité
+            Lever le voile et laisser votre vérité
           </p>
           <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
             <span className="px-3 py-1 backdrop-blur-sm bg-white/5 rounded-full border border-white/10">
@@ -132,12 +132,11 @@ export default function Home() {
           {/* Formulaire */}
           <form onSubmit={pay} className="backdrop-blur-md bg-white/5 rounded-2xl border border-white/10 shadow-2xl p-8 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-3">
-                Votre fragment d'humanité
-              </label>
-              <p className="text-xs text-gray-500 mb-4">
-                Qu'est-ce qui vous traverse ? Une vérité, un secret, un élan du cœur ?
-              </p>
+              <div className="mb-3">
+                <span className="text-xs uppercase tracking-widest text-purple-400 font-semibold">
+                  Votre fragment
+                </span>
+              </div>
               <div className="relative">
                 <textarea
                   value={text}
@@ -159,7 +158,7 @@ export default function Home() {
               type="submit"
               disabled={loading || !text.trim()}
               className={`
-                w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform
+                w-full h-14 py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform
                 ${loading || !text.trim()
                   ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98]'
@@ -179,7 +178,7 @@ export default function Home() {
                 ) : (
                   <>
                     <span className="mr-2">🔮</span>
-                    Révéler et partager • 1€
+                    Révéler et partager
                   </>
                 )}
               </span>
@@ -358,8 +357,19 @@ function ApplePaySection({ text }: { text: string }) {
   if (!paymentRequest) return null;
 
   return (
-    <div className="mt-4">
-      <PaymentRequestButtonElement options={{ paymentRequest }} />
+    <div className="mt-2">
+      <PaymentRequestButtonElement
+        options={{
+          paymentRequest,
+          style: {
+            paymentRequestButton: {
+              type: "buy",
+              theme: "dark",
+              height: "56px",
+            },
+          },
+        }}
+      />
     </div>
   );
 }
