@@ -263,7 +263,7 @@ export default function Home() {
 import { useSearchParams } from "next/navigation";
 
 function RevealedMessage() {
-  const [revealed, setRevealed] = useState<{ text: string; created_at: string } | null>(null);
+  const [revealed, setRevealed] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const params = useSearchParams();
 
@@ -272,10 +272,17 @@ function RevealedMessage() {
     if (!sessionId) return;
 
     fetch(`/api/confirm?session_id=${encodeURIComponent(sessionId)}`)
-      .then(r => r.json())
-      .then(d => {
-        if (d?.previous) setRevealed(d.previous);
-        window.history.replaceState({}, document.title, "/");
+      .then((r) => {
+        if (!r.ok) throw new Error("confirm_failed");
+        return r.json();
+      })
+      .then((d) => {
+        if (d && typeof d.previous === "string" && d.previous.length > 0) {
+          setRevealed(d.previous);
+          window.history.replaceState({}, "", "/");
+        } else {
+          setErr("Aucun message à révéler");
+        }
       })
       .catch(() => setErr("Erreur lors de la confirmation"));
   }, [params]);
@@ -295,7 +302,7 @@ function RevealedMessage() {
         <p className="text-red-400 text-sm">{err}</p>
       ) : revealed ? (
         <blockquote className="text-gray-100 text-lg leading-relaxed">
-          {revealed.text}
+          {revealed}
         </blockquote>
       ) : (
         <div className="space-y-2">
