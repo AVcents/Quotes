@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { Elements, useStripe, useElements, PaymentRequestButtonElement } from "@stripe/react-stripe-js";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -61,7 +62,8 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen relative overflow-hidden">
+    <Elements stripe={stripePromise}>
+      <main className="min-h-screen relative overflow-hidden">
       {/* Background animé avec dégradés */}
       <div className="fixed inset-0 bg-gradient-to-br from-black via-purple-950 to-pink-950">
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -176,30 +178,7 @@ export default function Home() {
               )}
             </button>
 
-            {canPay && (
-              <button
-                type="button"
-                className="w-full py-4 px-6 rounded-xl font-bold text-lg bg-black text-white hover:opacity-90 transition"
-                onClick={async () => {
-                  const stripe = await stripePromise;
-                  if (!stripe) return;
-                  const res = await fetch("/api/create-payment-intent", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ amount: 100, text }),
-                  });
-                  const { clientSecret } = await res.json();
-                  const pr = stripe.paymentRequest({
-                    country: "FR",
-                    currency: "eur",
-                    total: { label: "Message", amount: 100 },
-                  });
-                  pr.show();
-                }}
-              >
-                Payer avec  Pay
-              </button>
-            )}
+            <ApplePaySection text={text} />
 
             {/* Message d'erreur */}
             {err && (
@@ -302,8 +281,36 @@ export default function Home() {
           background: rgba(255, 255, 255, 0.3);
         }
       `}</style>
-    </main>
+      </main>
+    </Elements>
   );
+function ApplePaySection({ text }: { text: string }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [paymentRequest, setPaymentRequest] = useState<any>(null);
+
+  useEffect(() => {
+    if (!stripe || !elements) return;
+    const pr = stripe.paymentRequest({
+      country: "FR",
+      currency: "eur",
+      total: { label: "Message", amount: 100 },
+      requestPayerName: true,
+      requestPayerEmail: true,
+    });
+    pr.canMakePayment().then((result: any) => {
+      if (result) setPaymentRequest(pr);
+    });
+  }, [stripe, elements]);
+
+  if (!paymentRequest) return null;
+
+  return (
+    <div className="mt-4">
+      <PaymentRequestButtonElement options={{ paymentRequest }} />
+    </div>
+  );
+}
 }
 
 import { useSearchParams } from "next/navigation";
