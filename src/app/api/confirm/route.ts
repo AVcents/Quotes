@@ -25,22 +25,32 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "SERVER_MISCONFIGURED" }, { status: 500 });
     }
 
-    // 1) Validate query
-    const sessionId = req.nextUrl.searchParams.get("session_id");
-    if (!sessionId) {
-      return NextResponse.json({ error: "NO_SESSION_ID" }, { status: 400 });
+    const url = req.nextUrl;
+    const sessionId = url.searchParams.get("session_id");
+    const intentId = url.searchParams.get("intent_id");
+
+    let paid = false;
+    let pendingText = "";
+
+    if (sessionId) {
+      // Checkout Session flow
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      paid = session.payment_status === "paid";
+      pendingText = String(session.metadata?.pending_text ?? "").trim();
+    } else if (intentId) {
+      // PaymentIntent flow (Apple Pay via Payment Request Button)
+      const pi = await stripe.paymentIntents.retrieve(intentId);
+      paid = pi.status === "succeeded";
+      pendingText = String(pi.metadata?.pending_text ?? "").trim();
+    } else {
+      return NextResponse.json({ error: "NO_TOKEN" }, { status: 400 });
     }
 
-    // 2) Verify payment with Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    if (session.payment_status !== "paid") {
-      return NextResponse.json(
-        { error: "UNPAID", status: session.payment_status },
-        { status: 402 }
-      );
+    if (!paid) {
+      return NextResponse.json({ error: "UNPAID" }, { status: 402 });
     }
 
-    // 3) Read last message from Supabase
+    // 1) Read last message from Supabase
     const { data: lastRow, error: selErr } = await supabase
       .from("messages")
       .select("text")
@@ -54,16 +64,15 @@ export async function GET(req: NextRequest) {
 
     const previous = lastRow?.text ?? null;
 
-    // 4) Insert new message from Stripe session metadata
-    const text = String(session.metadata?.pending_text ?? "").trim();
-    if (text) {
-      const { error: insErr } = await supabase.from("messages").insert({ text });
+    // 2) Insert new message from metadata
+    if (pendingText) {
+      const { error: insErr } = await supabase.from("messages").insert({ text: pendingText });
       if (insErr) {
         console.error("SUPABASE_INSERT_ERROR", insErr.message);
       }
     }
 
-    return NextResponse.json({ previous, saved: Boolean(text) }, { status: 200 });
+    return NextResponse.json({ previous, saved: Boolean(pendingText) }, { status: 200 });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("CONFIRM_ROUTE_ERROR", msg);
