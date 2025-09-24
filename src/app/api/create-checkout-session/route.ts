@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     const origin = req.headers.get("origin") || req.nextUrl.origin;
+    console.log("CHECKOUT origin:", origin);
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
