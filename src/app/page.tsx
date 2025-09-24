@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, useStripe, useElements, PaymentRequestButtonElement } from "@stripe/react-stripe-js";
+import Image from "next/image";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -63,184 +64,147 @@ export default function Home() {
 
   return (
     <Elements stripe={stripePromise}>
-      <main className="min-h-screen relative overflow-hidden bg-black">
-      {/* Background minimaliste avec effet de profondeur */}
-      <div className="fixed inset-0">
-        {/* Gradient subtil */}
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950 via-black to-neutral-950" />
-        
-        {/* Grille perspective */}
-        <div className="absolute inset-0 opacity-[0.03]" 
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: '100px 100px',
-            perspective: '1000px',
-            transformStyle: 'preserve-3d',
-          }}
-        />
-
-        {/* Lueur centrale mystique */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="w-[800px] h-[800px] bg-white/[0.02] rounded-full filter blur-[150px] animate-pulse-slow" />
-          <div className="absolute inset-0 w-[600px] h-[600px] bg-white/[0.01] rounded-full filter blur-[100px] animate-pulse-slower" />
-        </div>
-
-        {/* Particules flottantes */}
-        <div className="absolute inset-0">
-          {[...Array(30)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-white/20 rounded-full animate-float"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 20}s`,
-                animationDuration: `${20 + Math.random() * 20}s`
-              }}
-            />
-          ))}
-        </div>
+      <main className="min-h-screen relative overflow-hidden">
+      {/* Background animé avec dégradés */}
+      <div className="fixed inset-0 bg-gradient-to-br from-black via-purple-950 to-pink-950">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        {/* Orbes flottants animés */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-violet-600/10 rounded-full filter blur-3xl animate-pulse animation-delay-4000" />
       </div>
 
       {/* Contenu principal */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-8">
-        {/* Header épuré */}
-        <header className="text-center mb-16 animate-fade-in">
-          <div className="mb-6">
-            <h1 className="text-5xl md:text-7xl font-thin text-white tracking-[0.2em] mb-2">
-              QUOTES<span className="text-white/30">.</span>SOCIAL
-            </h1>
-            <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-          </div>
-          
-          <p className="text-sm md:text-base text-white/60 font-light tracking-wider uppercase mb-8">
+        {/* Header */}
+        <header className="text-center mb-12 animate-fade-in">
+          <Image
+            src="/logo.png"
+            alt="Quotes Social"
+            width={580}
+            height={280}
+            className="mx-auto mb-4"
+          />
+          <p className="text-lg md:text-xl text-gray-300 font-light tracking-wide">
             Une chaîne infinie d'expressions humaines
           </p>
-
-          {/* Philosophie du projet */}
-          <div className="flex items-center justify-center gap-8 text-xs text-white/40 uppercase tracking-widest">
-            <span className="animate-fade-in-delay-1">Curiosité</span>
-            <span className="text-white/20">•</span>
-            <span className="animate-fade-in-delay-2">Mystère</span>
-            <span className="text-white/20">•</span>
-            <span className="animate-fade-in-delay-3">Humanité</span>
+          <p className="text-md text-gray-400 mt-2">
+            1€ pour lever le voile et laisser votre vérité
+          </p>
+          <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
+            <span className="px-3 py-1 backdrop-blur-sm bg-white/5 rounded-full border border-white/10">
+              Curiosité
+            </span>
+            <span className="text-gray-600">×</span>
+            <span className="px-3 py-1 backdrop-blur-sm bg-white/5 rounded-full border border-white/10">
+              Mystère
+            </span>
+            <span className="text-gray-600">×</span>
+            <span className="px-3 py-1 backdrop-blur-sm bg-white/5 rounded-full border border-white/10">
+              Humanité
+            </span>
           </div>
         </header>
 
-        {/* Container principal */}
-        <div className="w-full max-w-md animate-fade-in-up">
-          
-          {/* Message révélé */}
+        {/* Card principale */}
+        <div className="w-full max-w-lg animate-fade-in-up">
+          {/* Placeholder pour le dernier message */}
           <Suspense fallback={
-            <div className="mb-10 relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-white/5 to-white/5 rounded-lg blur-sm" />
-              <div className="relative bg-black/60 backdrop-blur-xl border border-white/10 rounded-lg p-8">
-                <div className="mb-4">
-                  <span className="text-[10px] uppercase tracking-[0.3em] text-white/30">
-                    Dernier Fragment
-                  </span>
-                </div>
-                <div className="space-y-3">
-                  <div className="h-3 bg-white/5 rounded-sm animate-pulse" style={{width: '85%'}} />
-                  <div className="h-3 bg-white/5 rounded-sm animate-pulse" style={{width: '95%'}} />
-                  <div className="h-3 bg-white/5 rounded-sm animate-pulse" style={{width: '70%'}} />
-                </div>
+            <div className="mb-8 p-6 backdrop-blur-md bg-white/5 rounded-2xl border border-white/10 shadow-2xl transform transition-all duration-300 hover:scale-[1.02]">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs uppercase tracking-widest text-purple-400 font-semibold">
+                  Fragment Précédent
+                </span>
+                <span className="text-xs text-gray-500">
+                  Chargement...
+                </span>
+              </div>
+              <div className="space-y-2">
+                <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-full animate-pulse" />
+                <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-5/6 animate-pulse animation-delay-200" />
+                <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-4/6 animate-pulse animation-delay-400" />
               </div>
             </div>
           }>
             <RevealedMessage />
           </Suspense>
 
-          {/* Le Rituel - Formulaire */}
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-white/[0.03] to-white/[0.03] rounded-lg blur-sm" />
-            <form onSubmit={pay} className="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg p-8">
-              
-              {/* Titre du rituel */}
-              <div className="text-center mb-8">
-                <h2 className="text-xs uppercase tracking-[0.3em] text-white/40 mb-3">
-                  Le Rituel
-                </h2>
-                <p className="text-sm text-white/60 leading-relaxed">
-                  1€ pour lever le voile<br/>
-                  et laisser votre vérité
-                </p>
-              </div>
-
-              {/* Zone de texte */}
-              <div className="mb-6">
-                <div className="relative group">
-                  <textarea
-                    value={text}
-                    onChange={handleTextChange}
-                    placeholder="Votre vérité, votre fragment d'humanité..."
-                    rows={5}
-                    maxLength={500}
-                    className="w-full px-0 py-4 bg-transparent border-0 border-b border-white/10 text-white/90 placeholder-white/20 resize-none focus:outline-none focus:border-white/30 transition-all duration-500 text-center font-light"
-                    style={{ 
-                      scrollbarWidth: 'none',
-                      letterSpacing: '0.05em'
-                    }}
-                  />
-                  <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform scale-x-0 group-focus-within:scale-x-100 transition-transform duration-700" />
+          {/* Formulaire */}
+          <form onSubmit={pay} className="backdrop-blur-md bg-white/5 rounded-2xl border border-white/10 shadow-2xl p-8 space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                Votre fragment d'humanité
+              </label>
+              <p className="text-xs text-gray-500 mb-4">
+                Qu'est-ce qui vous traverse ? Une vérité, un secret, un élan du cœur ?
+              </p>
+              <div className="relative">
+                <textarea
+                  value={text}
+                  onChange={handleTextChange}
+                  placeholder="Amour, espoir, colère, joie... Partagez votre vérité au monde entier, de manière anonyme et éternelle..."
+                  rows={6}
+                  maxLength={500}
+                  className="w-full px-4 py-3 bg-black/30 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                  style={{ scrollbarWidth: 'thin' }}
+                />
+                <div className="absolute bottom-3 right-3 text-xs text-gray-500">
+                  {charCount}/500
                 </div>
-                
-                {/* Compteur de caractères */}
-                <div className="mt-3 text-center">
-                  <span className="text-[10px] text-white/30 tracking-wider">
-                    {charCount} / 500
+              </div>
+            </div>
+
+            {/* Bouton de paiement */}
+            <button
+              type="submit"
+              disabled={loading || !text.trim()}
+              className={`
+                w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform
+                ${loading || !text.trim()
+                  ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98]'
+                }
+                shadow-lg relative overflow-hidden group
+              `}
+            >
+              <span className="relative z-10">
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Ouverture du portail de paiement...
                   </span>
-                </div>
-              </div>
-
-              {/* Bouton principal */}
-              <button
-                type="submit"
-                disabled={loading || !text.trim()}
-                className={`
-                  relative w-full py-5 px-8 rounded-sm font-light tracking-wider uppercase text-sm
-                  transition-all duration-700 overflow-hidden group
-                  ${loading || !text.trim()
-                    ? 'bg-white/[0.02] text-white/20 cursor-not-allowed border border-white/5'
-                    : 'bg-white/[0.05] text-white/80 hover:bg-white/[0.08] border border-white/10 hover:border-white/20'
-                  }
-                `}
-              >
-                {/* Effet de hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                
-                <span className="relative">
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-3">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      Ouverture du portail...
-                    </span>
-                  ) : (
-                    'Participer au rituel — 1€'
-                  )}
-                </span>
-              </button>
-
-              <ApplePaySection text={text} />
-
-              {/* Erreur */}
-              {err && (
-                <div className="mt-4 p-3 bg-red-900/20 border border-red-500/20 rounded-sm">
-                  <p className="text-red-400/80 text-xs text-center">{err}</p>
-                </div>
+                ) : (
+                  <>
+                    <span className="mr-2">🔮</span>
+                    Révéler et partager • 1€
+                  </>
+                )}
+              </span>
+              {!loading && text.trim() && (
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600/50 to-pink-600/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               )}
-            </form>
-          </div>
+            </button>
 
-          {/* Question philosophique */}
-          <div className="mt-12 text-center animate-fade-in-delay-4">
-            <p className="text-[11px] text-white/30 uppercase tracking-[0.2em] leading-relaxed">
-              Le monde est-il fait<br/>
-              <span className="text-white/40">d'amour ou de haine ?</span>
+            <ApplePaySection text={text} />
+
+            {/* Message d'erreur */}
+            {err && (
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg animate-shake">
+                <p className="text-red-400 text-sm text-center">{err}</p>
+              </div>
+            )}
+          </form>
+
+          {/* Footer info */}
+          <div className="mt-8 text-center text-xs text-gray-500">
+            <p className="mb-2 text-sm text-gray-400">✨ Une expérience sociale mondiale ✨</p>
+            <p>Le monde est-il fait d'amour ou de haine ?</p>
+            <p className="mt-1">Rejoignez la chaîne humaine infinie.</p>
+            <p className="mt-3 text-[10px] text-gray-600">
+              Chaque message reste anonyme • Chaque vérité compte
             </p>
           </div>
         </div>
@@ -255,85 +219,85 @@ export default function Home() {
         @keyframes fade-in-up {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.02; }
-          50% { opacity: 0.04; }
-        }
-
-        @keyframes pulse-slower {
-          0%, 100% { opacity: 0.01; }
-          50% { opacity: 0.02; }
-        }
-
-        @keyframes float {
+        
+        @keyframes gradient-x {
           0%, 100% {
-            transform: translateY(0) translateX(0);
-            opacity: 0;
+            background-size: 200% 200%;
+            background-position: left center;
           }
-          10% {
-            opacity: 0.2;
+          50% {
+            background-size: 200% 200%;
+            background-position: right center;
           }
-          90% {
-            opacity: 0.2;
-          }
-          100% {
-            transform: translateY(-100vh) translateX(20px);
-            opacity: 0;
-          }
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+          20%, 40%, 60%, 80% { transform: translateX(2px); }
         }
         
         .animate-fade-in {
-          animation: fade-in 1.5s ease-out;
+          animation: fade-in 1s ease-out;
         }
         
         .animate-fade-in-up {
-          animation: fade-in-up 1.5s ease-out;
+          animation: fade-in-up 1s ease-out;
         }
-
-        .animate-fade-in-delay-1 {
-          animation: fade-in 1.5s ease-out 0.2s both;
+        
+        .animate-gradient-x {
+          animation: gradient-x 6s ease infinite;
+          background-size: 200% 200%;
         }
-
-        .animate-fade-in-delay-2 {
-          animation: fade-in 1.5s ease-out 0.4s both;
+        
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
         }
-
-        .animate-fade-in-delay-3 {
-          animation: fade-in 1.5s ease-out 0.6s both;
+        
+        .animation-delay-200 {
+          animation-delay: 200ms;
         }
-
-        .animate-fade-in-delay-4 {
-          animation: fade-in 2s ease-out 1s both;
+        
+        .animation-delay-400 {
+          animation-delay: 400ms;
         }
-
-        .animate-pulse-slow {
-          animation: pulse-slow 8s ease-in-out infinite;
+        
+        .animation-delay-2000 {
+          animation-delay: 2s;
         }
-
-        .animate-pulse-slower {
-          animation: pulse-slower 12s ease-in-out infinite;
+        
+        .animation-delay-4000 {
+          animation-delay: 4s;
         }
-
-        .animate-float {
-          animation: float 30s linear infinite;
-        }
-
+        
         textarea::-webkit-scrollbar {
-          display: none;
+          width: 6px;
+        }
+        
+        textarea::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 3px;
+        }
+        
+        textarea::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 3px;
+        }
+        
+        textarea::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.3);
         }
       `}</style>
       </main>
     </Elements>
   );
-
 function ApplePaySection({ text }: { text: string }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -354,8 +318,10 @@ function ApplePaySection({ text }: { text: string }) {
       if (result) setPaymentRequest(pr);
     });
 
+    // Ecoute l'évènement de paiement Apple Pay
     pr.on("paymentmethod", async (ev: any) => {
       try {
+        // 1) Crée le PaymentIntent côté serveur avec le texte courant
         const res = await fetch("/api/create-payment-intent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -364,6 +330,7 @@ function ApplePaySection({ text }: { text: string }) {
         const data = await res.json();
         if (!res.ok || !data?.clientSecret) throw new Error("intent_error");
 
+        // 2) Confirme le paiement avec Stripe
         const confirmRes = await stripe!.confirmCardPayment(data.clientSecret, {
           payment_method: ev.paymentMethod.id,
         });
@@ -375,8 +342,10 @@ function ApplePaySection({ text }: { text: string }) {
 
         ev.complete("success");
 
+        // 3) Appelle l'API de confirmation pour révéler / enregistrer
         const piId = confirmRes.paymentIntent?.id;
         if (piId) {
+          // Redirige avec intent_id pour que la page révèle le message
           window.location.href = `/?intent_id=${encodeURIComponent(piId)}`;
           return;
         }
@@ -389,7 +358,7 @@ function ApplePaySection({ text }: { text: string }) {
   if (!paymentRequest) return null;
 
   return (
-    <div className="mt-6 opacity-60 hover:opacity-100 transition-opacity duration-500">
+    <div className="mt-4">
       <PaymentRequestButtonElement options={{ paymentRequest }} />
     </div>
   );
@@ -423,44 +392,36 @@ function RevealedMessage() {
           setRevealed(d.previous);
           window.history.replaceState({}, "", "/");
         } else {
-          setErr("Aucun fragment précédent");
+          setErr("Aucun message à révéler");
         }
       })
       .catch(() => setErr("Erreur lors de la révélation"));
   }, [params]);
 
   return (
-    <div className="mb-10 relative group">
-      {/* Glow effect */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-white/[0.02] to-white/[0.02] rounded-lg blur-sm group-hover:from-white/[0.04] group-hover:to-white/[0.04] transition-all duration-700" />
-      
-      {/* Content */}
-      <div className="relative bg-black/60 backdrop-blur-xl border border-white/10 rounded-lg p-8 transition-all duration-700">
-        <div className="flex items-center justify-between mb-6">
-          <span className="text-[10px] uppercase tracking-[0.3em] text-white/30">
-            Fragment Précédent
-          </span>
-          {revealed && (
-            <span className="text-[10px] uppercase tracking-[0.2em] text-white/20">
-              Révélé
-            </span>
-          )}
-        </div>
-
-        {err ? (
-          <p className="text-red-400/60 text-sm text-center font-light">{err}</p>
-        ) : revealed ? (
-          <blockquote className="text-white/80 text-base md:text-lg leading-relaxed text-center font-light tracking-wide">
-            "{revealed}"
-          </blockquote>
-        ) : (
-          <div className="space-y-3">
-            <div className="h-3 bg-white/5 rounded-sm animate-pulse" style={{width: '85%'}} />
-            <div className="h-3 bg-white/5 rounded-sm animate-pulse animation-delay-200" style={{width: '95%'}} />
-            <div className="h-3 bg-white/5 rounded-sm animate-pulse animation-delay-400" style={{width: '70%'}} />
-          </div>
-        )}
+    <div className="mb-8 p-6 backdrop-blur-md bg-white/5 rounded-2xl border border-white/10 shadow-2xl transform transition-all duration-300 hover:scale-[1.02]">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs uppercase tracking-widest text-purple-400 font-semibold">
+          Fragment Précédent
+        </span>
+        <span className="text-xs text-gray-500">
+          {revealed ? "Révélé pour vous" : "Caché jusqu'au paiement"}
+        </span>
       </div>
+
+      {err ? (
+        <p className="text-red-400 text-sm">{err}</p>
+      ) : revealed ? (
+        <blockquote className="text-gray-100 text-lg leading-relaxed italic">
+          "{revealed}"
+        </blockquote>
+      ) : (
+        <div className="space-y-2">
+          <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-full animate-pulse" />
+          <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-5/6 animate-pulse animation-delay-200" />
+          <div className="h-4 bg-gradient-to-r from-white/10 to-transparent rounded-full w-4/6 animate-pulse animation-delay-400" />
+        </div>
+      )}
     </div>
   );
 }
