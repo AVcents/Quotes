@@ -305,7 +305,7 @@ function ApplePaySection({ text }: { text: string }) {
     });
 
     // Ecoute l'évènement de paiement Apple Pay
-    pr.on("payment", async (ev: any) => {
+    pr.on("paymentmethod", async (ev: any) => {
       try {
         // 1) Crée le PaymentIntent côté serveur avec le texte courant
         const res = await fetch("/api/create-payment-intent", {
