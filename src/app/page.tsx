@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
+import { loadStripe } from "@stripe/stripe-js";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -7,6 +8,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [charCount, setCharCount] = useState(0);
+  const [canPay, setCanPay] = useState(false);
+  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
   async function pay(e: React.FormEvent) {
     e.preventDefault();
@@ -39,6 +42,23 @@ export default function Home() {
       setCharCount(newText.length);
     }
   };
+
+  useEffect(() => {
+    async function checkApplePay() {
+      const stripe = await stripePromise;
+      if (!stripe) return;
+      const pr = stripe.paymentRequest({
+        country: "FR",
+        currency: "eur",
+        total: { label: "Message", amount: 100 },
+        requestPayerName: true,
+        requestPayerEmail: true,
+      });
+      const result = await pr.canMakePayment();
+      if (result) setCanPay(true);
+    }
+    checkApplePay();
+  }, []);
 
   return (
     <main className="min-h-screen relative overflow-hidden">
@@ -119,6 +139,7 @@ export default function Home() {
                   {charCount}/500
                 </div>
               </div>
+
             </div>
 
             {/* Bouton de paiement */}
@@ -154,6 +175,31 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600/50 to-pink-600/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               )}
             </button>
+
+            {canPay && (
+              <button
+                type="button"
+                className="w-full py-4 px-6 rounded-xl font-bold text-lg bg-black text-white hover:opacity-90 transition"
+                onClick={async () => {
+                  const stripe = await stripePromise;
+                  if (!stripe) return;
+                  const res = await fetch("/api/create-payment-intent", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ amount: 100, text }),
+                  });
+                  const { clientSecret } = await res.json();
+                  const pr = stripe.paymentRequest({
+                    country: "FR",
+                    currency: "eur",
+                    total: { label: "Message", amount: 100 },
+                  });
+                  pr.show();
+                }}
+              >
+                Payer avec  Pay
+              </button>
+            )}
 
             {/* Message d'erreur */}
             {err && (
