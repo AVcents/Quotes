@@ -291,6 +291,7 @@ function ApplePaySection({ text }: { text: string }) {
 
   useEffect(() => {
     if (!stripe || !elements) return;
+
     const pr = stripe.paymentRequest({
       country: "FR",
       currency: "eur",
@@ -298,10 +299,48 @@ function ApplePaySection({ text }: { text: string }) {
       requestPayerName: true,
       requestPayerEmail: true,
     });
+
     pr.canMakePayment().then((result: any) => {
       if (result) setPaymentRequest(pr);
     });
-  }, [stripe, elements]);
+
+    // Ecoute l'évènement de paiement Apple Pay
+    pr.on("payment", async (ev: any) => {
+      try {
+        // 1) Crée le PaymentIntent côté serveur avec le texte courant
+        const res = await fetch("/api/create-payment-intent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: 100, text }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.clientSecret) throw new Error("intent_error");
+
+        // 2) Confirme le paiement avec Stripe
+        const confirmRes = await stripe!.confirmCardPayment(data.clientSecret, {
+          payment_method: ev.paymentMethod.id,
+        });
+
+        if (confirmRes.error) {
+          ev.complete("fail");
+          return;
+        }
+
+        ev.complete("success");
+
+        // 3) Appelle l'API de confirmation pour révéler / enregistrer
+        const piId = confirmRes.paymentIntent?.id;
+        if (piId) {
+          await fetch(`/api/confirm?intent_id=${encodeURIComponent(piId)}`);
+        }
+
+        // 4) Recharge pour afficher le message révélé
+        window.location.reload();
+      } catch (e) {
+        try { ev.complete("fail"); } catch {}
+      }
+    });
+  }, [stripe, elements, text]);
 
   if (!paymentRequest) return null;
 
