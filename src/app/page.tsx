@@ -331,11 +331,10 @@ function ApplePaySection({ text }: { text: string }) {
         // 3) Appelle l'API de confirmation pour révéler / enregistrer
         const piId = confirmRes.paymentIntent?.id;
         if (piId) {
-          await fetch(`/api/confirm?intent_id=${encodeURIComponent(piId)}`);
+          // Redirige avec intent_id pour que la page révèle le message
+          window.location.href = `/?intent_id=${encodeURIComponent(piId)}`;
+          return;
         }
-
-        // 4) Recharge pour afficher le message révélé
-        window.location.reload();
       } catch (e) {
         try { ev.complete("fail"); } catch {}
       }
@@ -361,9 +360,15 @@ function RevealedMessage() {
 
   useEffect(() => {
     const sessionId = params.get("session_id");
-    if (!sessionId) return;
+    const intentId = params.get("intent_id");
+    const token = sessionId || intentId;
+    if (!token) return;
 
-    fetch(`/api/confirm?session_id=${encodeURIComponent(sessionId)}`)
+    const qs = sessionId
+      ? `session_id=${encodeURIComponent(sessionId)}`
+      : `intent_id=${encodeURIComponent(intentId!)}`;
+
+    fetch(`/api/confirm?${qs}`)
       .then((r) => {
         if (!r.ok) throw new Error("confirm_failed");
         return r.json();
